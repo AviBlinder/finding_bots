@@ -36,8 +36,11 @@ reviews %>%
 #
 #filtered_reviews %>% summarise(prop_reviews_h  = max (stars)) -> filtered_reviews_high_prop
 
-table(filtered_reviews$prop_reviews)
 
+filtered_reviews %>% filter (prop_reviews == 1) %>% 
+  group_by(business_id) %>% mutate(avg_stars = mean(stars)) -> filtered_reviews2
+#  group_by(business_id) %>% summarise(avg_stars = mean(stars)) -> filtered_reviews1
+hist(filtered_reviews2$avg_stars)
 
 qplot(filtered_reviews$prop_reviews) + stat_bin(bins = 50,binwidth = 0.05)
 
