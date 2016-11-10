@@ -1,7 +1,7 @@
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-
+library(knitr)
 
 #friends <- read.csv("D:/Yelp/r_datasets/friends.csv",stringsAsFactors = FALSE)
 users <- read.csv("D:/Yelp/r_datasets//users.csv",stringsAsFactors = FALSE)
@@ -18,7 +18,7 @@ names(reviews)
 
 
 
-##Assumption #1: No friends and really few funs
+##Assumption #1: No c and really few funs
 users %>% filter(FriendsNumber < 2 & fans <= 3) -> filtered_users_p1
 
 ##Assumption #2: No tips given by those users
@@ -41,11 +41,21 @@ reviews %>%
 
 filtered_reviews %>% filter (prop_reviews == 1) %>% 
   group_by(business_id) %>% 
-  mutate(avg_stars = round(mean(stars),1)) -> filtered_reviews2
+  mutate(avg_stars = round(mean(stars),1)) %>%
+  left_join(users,by="user_id")   -> filtered_reviews2
+
+kable(filtered_reviews2[1:10,c("FriendsNumber")])
+table("Number of Friends: " =filtered_reviews2$FriendsNumber)
 #  group_by(business_id) %>% summarise(avg_stars = mean(stars)) -> filtered_reviews1
 
 
-qp <- qplot(stars,data=filtered_reviews2,geom = "bar")
+#qp <- qplot(stars,data=filtered_reviews2,geom = "bar")
 #qplot(avg_stars,data=filtered_reviews2,geom = "histogram")
-summary(qp)
+#summary(qp)
 
+g <- ggplot(filtered_reviews2,aes(stars,group=factor(FriendsNumber)))
+g + geom_bar() 
+#g + facet_grid(.~as.factor(FriendsNumber))
+summary(g)
+#g + scale_color_discrete(aes(FriendsNumber))
+  
